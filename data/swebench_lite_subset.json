@@ -1,0 +1,191 @@
+[
+  {
+    "instance_id": "astropy__astropy-7746",
+    "repo": "astropy/astropy",
+    "lines_changed": 5,
+    "n_fail_to_pass": 1,
+    "problem_statement_preview": "Issue when passing empty lists/arrays to WCS transformations The following should not fail but instead should return empty lists/arrays:\r \r ```\r In [1"
+  },
+  {
+    "instance_id": "django__django-11019",
+    "repo": "django/django",
+    "lines_changed": 76,
+    "n_fail_to_pass": 16,
+    "problem_statement_preview": "Merging 3 or more media objects can throw unnecessary MediaOrderConflictWarnings Description \t Consider the following form definition, where text-edit"
+  },
+  {
+    "instance_id": "django__django-11620",
+    "repo": "django/django",
+    "lines_changed": 6,
+    "n_fail_to_pass": 1,
+    "problem_statement_preview": "When DEBUG is True, raising Http404 in a path converter's to_python method does not result in a technical response Description \t This is the response "
+  },
+  {
+    "instance_id": "django__django-11630",
+    "repo": "django/django",
+    "lines_changed": 20,
+    "n_fail_to_pass": 2,
+    "problem_statement_preview": "Django throws error when different apps with different models have the same name table name. Description \t Error message: table_name: (models.E028) db"
+  },
+  {
+    "instance_id": "django__django-11815",
+    "repo": "django/django",
+    "lines_changed": 7,
+    "n_fail_to_pass": 2,
+    "problem_statement_preview": "Migrations uses value of enum object instead of its name. Description \t  \t\t(last modified by oasl) \t  When using Enum object as a default value for a "
+  },
+  {
+    "instance_id": "django__django-12308",
+    "repo": "django/django",
+    "lines_changed": 5,
+    "n_fail_to_pass": 2,
+    "problem_statement_preview": "JSONField are not properly displayed in admin when they are readonly. Description \t JSONField values are displayed as dict when readonly in the admin."
+  },
+  {
+    "instance_id": "django__django-12497",
+    "repo": "django/django",
+    "lines_changed": 4,
+    "n_fail_to_pass": 2,
+    "problem_statement_preview": "Wrong hint about recursive relationship. Description \t  \t\t(last modified by Matheus Cunha Motta) \t  When there's more than 2 ForeignKeys in an interme"
+  },
+  {
+    "instance_id": "django__django-12747",
+    "repo": "django/django",
+    "lines_changed": 6,
+    "n_fail_to_pass": 3,
+    "problem_statement_preview": "QuerySet.Delete - inconsistent result when zero objects deleted Description \t The result format of the QuerySet.Delete method is a tuple: (X, Y)  X - "
+  },
+  {
+    "instance_id": "django__django-15400",
+    "repo": "django/django",
+    "lines_changed": 6,
+    "n_fail_to_pass": 2,
+    "problem_statement_preview": "SimpleLazyObject doesn't implement __radd__ Description \t Technically, there's a whole bunch of magic methods it doesn't implement, compared to a comp"
+  },
+  {
+    "instance_id": "django__django-15819",
+    "repo": "django/django",
+    "lines_changed": 12,
+    "n_fail_to_pass": 1,
+    "problem_statement_preview": "inspectdb should generate related_name on same relation links. Description \t Hi! After models generation with inspectdb command we have issue with rel"
+  },
+  {
+    "instance_id": "matplotlib__matplotlib-22835",
+    "repo": "matplotlib/matplotlib",
+    "lines_changed": 19,
+    "n_fail_to_pass": 1,
+    "problem_statement_preview": "[Bug]: scalar mappable format_cursor_data crashes on BoundarNorm ### Bug summary\r \r In 3.5.0 if you do:\r \r ```python\r import matplotlib.pyplot as plt\r"
+  },
+  {
+    "instance_id": "matplotlib__matplotlib-25332",
+    "repo": "matplotlib/matplotlib",
+    "lines_changed": 13,
+    "n_fail_to_pass": 1,
+    "problem_statement_preview": "[Bug]: Unable to pickle figure with aligned labels ### Bug summary\r \r  Unable to pickle figure after calling `align_labels()`\r \r ### Code for reproduc"
+  },
+  {
+    "instance_id": "mwaskom__seaborn-3407",
+    "repo": "mwaskom/seaborn",
+    "lines_changed": 4,
+    "n_fail_to_pass": 1,
+    "problem_statement_preview": "pairplot raises KeyError with MultiIndex DataFrame When trying to pairplot a MultiIndex DataFrame, `pairplot` raises a `KeyError`:\r \r MRE:\r \r ```pytho"
+  },
+  {
+    "instance_id": "pallets__flask-4045",
+    "repo": "pallets/flask",
+    "lines_changed": 16,
+    "n_fail_to_pass": 2,
+    "problem_statement_preview": "Raise error when blueprint name contains a dot This is required since every dot is now significant since blueprints can be nested. An error was alread"
+  },
+  {
+    "instance_id": "psf__requests-1963",
+    "repo": "psf/requests",
+    "lines_changed": 5,
+    "n_fail_to_pass": 7,
+    "problem_statement_preview": "`Session.resolve_redirects` copies the original request for all subsequent requests, can cause incorrect method selection Consider the following redir"
+  },
+  {
+    "instance_id": "pydata__xarray-3364",
+    "repo": "pydata/xarray",
+    "lines_changed": 10,
+    "n_fail_to_pass": 2,
+    "problem_statement_preview": "Ignore missing variables when concatenating datasets? Several users (@raj-kesavan, @richardotis, now myself) have wondered about how to concatenate xr"
+  },
+  {
+    "instance_id": "pylint-dev__pylint-6506",
+    "repo": "pylint-dev/pylint",
+    "lines_changed": 3,
+    "n_fail_to_pass": 2,
+    "problem_statement_preview": "Traceback printed for unrecognized option ### Bug description  A traceback is printed when an unrecognized option is passed to pylint.  ### Configurat"
+  },
+  {
+    "instance_id": "pytest-dev__pytest-5692",
+    "repo": "pytest-dev/pytest",
+    "lines_changed": 4,
+    "n_fail_to_pass": 2,
+    "problem_statement_preview": "Hostname and timestamp properties in generated JUnit XML reports Pytest enables generating JUnit XML reports of the tests.\r \r However, there are some "
+  },
+  {
+    "instance_id": "scikit-learn__scikit-learn-14983",
+    "repo": "scikit-learn/scikit-learn",
+    "lines_changed": 5,
+    "n_fail_to_pass": 2,
+    "problem_statement_preview": "RepeatedKFold and RepeatedStratifiedKFold do not show correct __repr__ string #### Description\r \r `RepeatedKFold` and `RepeatedStratifiedKFold` do not"
+  },
+  {
+    "instance_id": "scikit-learn__scikit-learn-25500",
+    "repo": "scikit-learn/scikit-learn",
+    "lines_changed": 41,
+    "n_fail_to_pass": 1,
+    "problem_statement_preview": "CalibratedClassifierCV doesn't work with `set_config(transform_output=\"pandas\")` ### Describe the bug\r \r CalibratedClassifierCV with isotonic regressi"
+  },
+  {
+    "instance_id": "sphinx-doc__sphinx-10325",
+    "repo": "sphinx-doc/sphinx",
+    "lines_changed": 12,
+    "n_fail_to_pass": 1,
+    "problem_statement_preview": "inherited-members should support more than one class **Is your feature request related to a problem? Please describe.**\r I have two situations:\r - A c"
+  },
+  {
+    "instance_id": "sympy__sympy-14817",
+    "repo": "sympy/sympy",
+    "lines_changed": 3,
+    "n_fail_to_pass": 1,
+    "problem_statement_preview": "Error pretty printing MatAdd ```py\r >>> pprint(MatrixSymbol('x', n, n) + MatrixSymbol('y*', n, n))\r Traceback (most recent call last):\r   File \"./symp"
+  },
+  {
+    "instance_id": "sympy__sympy-15345",
+    "repo": "sympy/sympy",
+    "lines_changed": 5,
+    "n_fail_to_pass": 1,
+    "problem_statement_preview": "mathematica_code gives wrong output with Max If I run the code\r \r ```\r x = symbols('x')\r mathematica_code(Max(x,2))\r ```\r \r then I would expect the ou"
+  },
+  {
+    "instance_id": "sympy__sympy-20154",
+    "repo": "sympy/sympy",
+    "lines_changed": 23,
+    "n_fail_to_pass": 2,
+    "problem_statement_preview": "partitions() reusing the output dictionaries The partitions() iterator in sympy.utilities.iterables reuses the output dictionaries. There is a caveat "
+  },
+  {
+    "instance_id": "sympy__sympy-20590",
+    "repo": "sympy/sympy",
+    "lines_changed": 5,
+    "n_fail_to_pass": 1,
+    "problem_statement_preview": "Symbol instances have __dict__ since 1.7? In version 1.6.2 Symbol instances had no `__dict__` attribute\r ```python\r >>> sympy.Symbol('s').__dict__\r --"
+  },
+  {
+    "instance_id": "sympy__sympy-23117",
+    "repo": "sympy/sympy",
+    "lines_changed": 15,
+    "n_fail_to_pass": 1,
+    "problem_statement_preview": "sympy.Array([]) fails, while sympy.Matrix([]) works SymPy 1.4 does not allow to construct empty Array (see code below). Is this the intended behavior?"
+  },
+  {
+    "instance_id": "sympy__sympy-23262",
+    "repo": "sympy/sympy",
+    "lines_changed": 4,
+    "n_fail_to_pass": 1,
+    "problem_statement_preview": "Python code printer not respecting tuple with one element Hi,\r \r Thanks for the recent updates in SymPy! I'm trying to update my code to use SymPy 1.1"
+  }
+]

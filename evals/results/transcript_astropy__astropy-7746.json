@@ -1,0 +1,109 @@
+[
+  {
+    "role": "user",
+    "parts": [
+      {
+        "text": "Commence."
+      }
+    ]
+  },
+  {
+    "role": "model",
+    "parts": [
+      {
+        "function_call": {
+          "name": "read_file",
+          "args": {
+            "path": "astropy/wcs/wcs.py",
+            "start": 1200,
+            "end": 1360
+          }
+        }
+      }
+    ]
+  },
+  {
+    "role": "user",
+    "parts": [
+      {
+        "function_response": {
+          "name": "read_file",
+          "response": {
+            "result": "  1200\t                raise ValueError(\n  1201\t                    \"WCS does not have both longitude and latitude celestial \"\n  1202\t                    \"axes, therefore (ra, dec) data can not be returned\")\n  1203\t            out = np.empty((sky.shape[0], 2))\n  1204\t            out[:, 0] = sky[:, self.wcs.lng]\n  1205\t            out[:, 1] = sky[:, self.wcs.lat]\n  1206\t            return out\n  1207\t\n  1208\t    def _array_converter(self, func, sky, *args, ra_dec_order=False):\n  1209\t        \"\"\"\n  1210\t        A helper function to support reading either a pair of arrays\n  1211\t        or a single Nx2 array.\n  1212\t        \"\"\"\n  1213\t\n  1214\t        def _return_list_of_arrays(axes, origin):\n  1215\t            try:\n  1216\t                axes = np.broadcast_arrays(*axes)\n  1217\t            except ValueError:\n  1218\t                raise ValueError(\n  1219\t                    \"Coordinate arrays are not broadcastable to each other\")\n  1220\t\n  1221\t            xy = np.hstack([x.reshape((x.size, 1)) for x in axes])\n  1222\t\n  1223\t            if ra_dec_order and sky == 'input':\n  1224\t                xy = self._denormalize_sky(xy)\n  1225\t            output = func(xy, origin)\n  1226\t            if ra_dec_order and sky == 'output':\n  1227\t                output = self._normalize_sky(output)\n  1228\t                return (output[:, 0].reshape(axes[0].shape),\n  1229\t                        output[:, 1].reshape(axes[0].shape))\n  1230\t            return [output[:, i].reshape(axes[0].shape)\n  1231\t                    for i in range(output.shape[1])]\n  1232\t\n  1233\t        def _return_single_array(xy, origin):\n  1234\t            if xy.shape[-1] != self.naxis:\n  1235\t                raise ValueError(\n  1236\t                    \"When providing two arguments, the array must be \"\n  1237\t                    \"of shape (N, {0})\".format(self.naxis))\n  1238\t            if ra_dec_order and sky == 'input':\n  1239\t                xy = self._denormalize_sky(xy)\n  1240\t            result = func(xy, origin)\n  1241\t            if ra_dec_order and sky == 'output':\n  1242\t                result = self._normalize_sky(result)\n  1243\t            return result\n  1244\t\n  1245\t        if len(args) == 2:\n  1246\t            try:\n  1247\t                xy, origin = args\n  1248\t                xy = np.asarray(xy)\n  1249\t                origin = int(origin)\n  1250\t            except Exception:\n  1251\t                raise TypeError(\n  1252\t                    \"When providing two arguments, they must be \"\n  1253\t                    \"(coords[N][{0}], origin)\".format(self.naxis))\n  1254\t            if self.naxis == 1 and len(xy.shape) == 1:\n  1255\t                return _return_list_of_arrays([xy], origin)\n  1256\t            return _return_single_array(xy, origin)\n  1257\t\n  1258\t        elif len(args) == self.naxis + 1:\n  1259\t            axes = args[:-1]\n  1260\t            origin = args[-1]\n  1261\t            try:\n  1262\t                axes = [np.asarray(x) for x in axes]\n  1263\t                origin = int(origin)\n  1264\t            except Exception:\n  1265\t                raise TypeError(\n  1266\t                    \"When providing more than two arguments, they must be \" +\n  1267\t                    \"a 1-D array for each axis, followed by an origin.\")\n  1268\t\n  1269\t            return _return_list_of_arrays(axes, origin)\n  1270\t\n  1271\t        raise TypeError(\n  1272\t            \"WCS projection has {0} dimensions, so expected 2 (an Nx{0} array \"\n  1273\t            \"and the origin argument) or {1} arguments (the position in each \"\n  1274\t            \"dimension, and the origin argument). Instead, {2} arguments were \"\n  1275\t            \"given.\".format(\n  1276\t                self.naxis, self.naxis + 1, len(args)))\n  1277\t\n  1278\t    def all_pix2world(self, *args, **kwargs):\n  1279\t        return self._array_converter(\n  1280\t            self._all_pix2world, 'output', *args, **kwargs)\n  1281\t    all_pix2world.__doc__ = \"\"\"\n  1282\t        Transforms pixel coordinates to world coordinates.\n  1283\t\n  1284\t        Performs all of the following in series:\n  1285\t\n  1286\t            - Detector to image plane correction (if present in the\n  1287\t              FITS file)\n  1288\t\n  1289\t            - `SIP`_ distortion correction (if present in the FITS\n  1290\t              file)\n  1291\t\n  1292\t            - `distortion paper`_ table-lookup correction (if present\n  1293\t              in the FITS file)\n  1294\t\n  1295\t            - `wcslib`_ \"core\" WCS transformation\n  1296\t\n  1297\t        Parameters\n  1298\t        ----------\n  1299\t        {0}\n  1300\t\n  1301\t            For a transformation that is not two-dimensional, the\n  1302\t            two-argument form must be used.\n  1303\t\n  1304\t        {1}\n  1305\t\n  1306\t        Returns\n  1307\t        -------\n  1308\t\n  1309\t        {2}\n  1310\t\n  1311\t        Notes\n  1312\t        -----\n  1313\t        The order of the axes for the result is determined by the\n  1314\t        ``CTYPEia`` keywords in the FITS header, therefore it may not\n  1315\t        always be of the form (*ra*, *dec*).  The\n  1316\t        `~astropy.wcs.Wcsprm.lat`, `~astropy.wcs.Wcsprm.lng`,\n  1317\t        `~astropy.wcs.Wcsprm.lattyp` and `~astropy.wcs.Wcsprm.lngtyp`\n  1318\t        members can be used to determine the order of the axes.\n  1319\t\n  1320\t        Raises\n  1321\t        ------\n  1322\t        MemoryError\n  1323\t            Memory allocation failed.\n  1324\t\n  1325\t        SingularMatrixError\n  1326\t            Linear transformation matrix is singular.\n  1327\t\n  1328\t        InconsistentAxisTypesError\n  1329\t            Inconsistent or unrecognized coordinate axis types.\n  1330\t\n  1331\t        ValueError\n  1332\t            Invalid parameter value.\n  1333\t\n  1334\t        ValueError\n  1335\t            Invalid coordinate transformation parameters.\n  1336\t\n  1337\t        ValueError\n  1338\t            x- and y-coordinate arrays are not the same size.\n  1339\t\n  1340\t        InvalidTransformError\n  1341\t            Invalid coordinate transformation parameters.\n  1342\t\n  1343\t        InvalidTransformError\n  1344\t            Ill-conditioned coordinate transformation parameters.\n  1345\t        \"\"\".format(__.TWO_OR_MORE_ARGS('naxis', 8),\n  1346\t                   __.RA_DEC_ORDER(8),\n  1347\t                   __.RETURNS('sky coordinates, in degrees', 8))\n  1348\t\n  1349\t    def wcs_pix2world(self, *args, **kwargs):\n  1350\t        if self.wcs is None:\n  1351\t            raise ValueError(\"No basic WCS settings were created.\")\n  1352\t        return self._array_converter(\n  1353\t            lambda xy, o: self.wcs.p2s(xy, o)['world'],\n  1354\t            'output', *args, **kwargs)\n  1355\t    wcs_pix2world.__doc__ = \"\"\"\n  1356\t        Transforms pixel coordinates to world coordinates by doing\n  1357\t        only the basic `wcslib`_ transformation.\n  1358\t\n  1359\t        No `SIP`_ or `distortion paper`_ table lookup correction is\n  1360\t        applied.  To perform distortion correction, see\n"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "role": "model",
+    "parts": [
+      {
+        "function_call": {
+          "name": "apply_patch",
+          "args": {
+            "diff_text": "--- a/astropy/wcs/wcs.py\n+++ b/astropy/wcs/wcs.py\n@@ -1222,6 +1222,13 @@\n \n             xy = np.hstack([x.reshape((x.size, 1)) for x in axes])\n \n+            # If there are no input coordinates, return empty arrays of the right shape\n+            if xy.shape[0] == 0:\n+                if ra_dec_order and sky == 'output':\n+                    return (np.array([], dtype=xy.dtype).reshape(axes[0].shape),\n+                            np.array([], dtype=xy.dtype).reshape(axes[0].shape))\n+                return [np.array([], dtype=xy.dtype).reshape(axes[0].shape) for _ in range(self.naxis)]\n+\n             if ra_dec_order and sky == 'input':\n                 xy = self._denormalize_sky(xy)\n             output = func(xy, origin)"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "role": "user",
+    "parts": [
+      {
+        "function_response": {
+          "name": "apply_patch",
+          "response": {
+            "result": "succès: False\nPatch invalide, non appliqué :\nerror: corrupt patch at line 16\n"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "role": "model",
+    "parts": [
+      {
+        "function_call": {
+          "name": "apply_patch",
+          "args": {
+            "diff_text": "--- a/astropy/wcs/wcs.py\n+++ b/astropy/wcs/wcs.py\n@@ -1222,6 +1222,13 @@\n \n             xy = np.hstack([x.reshape((x.size, 1)) for x in axes])\n \n+            # If there are no input coordinates, return empty arrays of the right shape\n+            if xy.shape[0] == 0:\n+                if ra_dec_order and sky == 'output':\n+                    return (np.array([], dtype=xy.dtype).reshape(axes[0].shape),\n+                            np.array([], dtype=xy.dtype).reshape(axes[0].shape))\n+                return [np.array([], dtype=xy.dtype).reshape(axes[0].shape) for _ in range(self.naxis)]\n+\n             if ra_dec_order and sky == 'input':\n                 xy = self._denormalize_sky(xy)\n             output = func(xy, origin)\n"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "role": "user",
+    "parts": [
+      {
+        "function_response": {
+          "name": "apply_patch",
+          "response": {
+            "result": "succès: True\nChecking patch astropy/wcs/wcs.py...\nHunk #1 succeeded at 1220 (offset -2 lines).\nApplied patch astropy/wcs/wcs.py cleanly.\n"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "role": "user",
+    "parts": [
+      {
+        "text": "Vérification automatique (non-régression, 30 tests pré-existants) : tous passent toujours. Aucune régression détectée."
+      }
+    ]
+  },
+  {
+    "role": "model",
+    "parts": [
+      {
+        "function_call": {
+          "name": "submit",
+          "args": {}
+        }
+      }
+    ]
+  }
+]

@@ -1,0 +1,7 @@
+{
+  "instance_id": "astropy__astropy-7746",
+  "model_patch": "diff --git a/astropy/wcs/wcs.py b/astropy/wcs/wcs.py\nindex d3a06f2b3..b1db1db3d 100755\n--- a/astropy/wcs/wcs.py\n+++ b/astropy/wcs/wcs.py\n@@ -1212,6 +1212,9 @@ reduce these to 2 dimensions using the naxis kwarg.\n         \"\"\"\n \n         def _return_list_of_arrays(axes, origin):\n+            if all(x.size == 0 for x in axes):\n+                return [np.array([], dtype=x.dtype).reshape(x.shape) for x in axes]\n+\n             try:\n                 axes = np.broadcast_arrays(*axes)\n             except ValueError:\n",
+  "iterations": 5,
+  "n_messages": 12,
+  "total_tokens": 14512
+}

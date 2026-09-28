@@ -1,0 +1,12 @@
+.env
+__pycache__/
+*.pyc
+.venv/
+venv/
+data/repos/
+data/swebench_lite_full_stats.json
+evals/traces/
+*.log
+logs/
+gold.*.json
+run_evaluation.*.json

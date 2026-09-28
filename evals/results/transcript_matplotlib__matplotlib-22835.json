@@ -1,0 +1,403 @@
+[
+  {
+    "role": "user",
+    "parts": [
+      {
+        "text": "Commence."
+      }
+    ]
+  },
+  {
+    "role": "model",
+    "parts": [
+      {
+        "function_call": {
+          "name": "read_file",
+          "args": {
+            "start": 1282,
+            "path": "lib/matplotlib/artist.py",
+            "end": 1282
+          }
+        }
+      }
+    ]
+  },
+  {
+    "role": "user",
+    "parts": [
+      {
+        "function_response": {
+          "name": "read_file",
+          "response": {
+            "result": "  1282\t            This method is intended to be overridden by artist subclasses.\n"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "role": "model",
+    "parts": [
+      {
+        "function_call": {
+          "name": "read_file",
+          "args": {
+            "end": 1290,
+            "start": 1270,
+            "path": "lib/matplotlib/artist.py"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "role": "user",
+    "parts": [
+      {
+        "function_response": {
+          "name": "read_file",
+          "response": {
+            "result": "  1270\t        See Also\n  1271\t        --------\n  1272\t        format_cursor_data\n  1273\t\n  1274\t        \"\"\"\n  1275\t        return None\n  1276\t\n  1277\t    def format_cursor_data(self, data):\n  1278\t        \"\"\"\n  1279\t        Return a string representation of *data*.\n  1280\t\n  1281\t        .. note::\n  1282\t            This method is intended to be overridden by artist subclasses.\n  1283\t            As an end-user of Matplotlib you will most likely not call this\n  1284\t            method yourself.\n  1285\t\n  1286\t        The default implementation converts ints and floats and arrays of ints\n  1287\t        and floats into a comma-separated string enclosed in square brackets,\n  1288\t        unless the artist has an associated colorbar, in which case scalar\n  1289\t        values are formatted using the colorbar's formatter.\n  1290\t\n"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "role": "model",
+    "parts": [
+      {
+        "function_call": {
+          "name": "search_code",
+          "args": {
+            "pattern": "def format_cursor_data",
+            "path": "lib/matplotlib/"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "role": "user",
+    "parts": [
+      {
+        "function_response": {
+          "name": "search_code",
+          "response": {
+            "result": "lib/matplotlib/artist.py:1277:    def format_cursor_data(self, data):\n"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "role": "model",
+    "parts": [
+      {
+        "function_call": {
+          "name": "search_code",
+          "args": {
+            "pattern": "class ScalarMappable",
+            "path": "lib/matplotlib/"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "role": "user",
+    "parts": [
+      {
+        "function_response": {
+          "name": "search_code",
+          "response": {
+            "result": "lib/matplotlib/cm.py:334:class ScalarMappable:\n"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "role": "model",
+    "parts": [
+      {
+        "function_call": {
+          "name": "read_file",
+          "args": {
+            "path": "lib/matplotlib/cm.py"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "role": "user",
+    "parts": [
+      {
+        "function_response": {
+          "name": "read_file",
+          "response": {
+            "result": "     1\t\"\"\"\n     2\tBuiltin colormaps, colormap handling utilities, and the `ScalarMappable` mixin.\n     3\t\n     4\t.. seealso::\n     5\t\n     6\t  :doc:`/gallery/color/colormap_reference` for a list of builtin colormaps.\n     7\t\n     8\t  :doc:`/tutorials/colors/colormap-manipulation` for examples of how to\n     9\t  make colormaps.\n    10\t\n    11\t  :doc:`/tutorials/colors/colormaps` an in-depth discussion of\n    12\t  choosing colormaps.\n    13\t\n    14\t  :doc:`/tutorials/colors/colormapnorms` for more details about data\n    15\t  normalization.\n    16\t\"\"\"\n    17\t\n    18\tfrom collections.abc import Mapping, MutableMapping\n    19\t\n    20\timport numpy as np\n    21\tfrom numpy import ma\n    22\t\n    23\timport matplotlib as mpl\n    24\tfrom matplotlib import _api, colors, cbook\n    25\tfrom matplotlib._cm import datad\n    26\tfrom matplotlib._cm_listed import cmaps as cmaps_listed\n    27\t\n    28\t\n    29\t@_api.caching_module_getattr  # module-level deprecations\n    30\tclass __getattr__:\n    31\t    LUTSIZE = _api.deprecated(\n    32\t        \"3.5\", obj_type=\"\", alternative=\"rcParams['image.lut']\")(\n    33\t            property(lambda self: _LUTSIZE))\n    34\t\n    35\t\n    36\t_LUTSIZE = mpl.rcParams['image.lut']\n    37\t\n    38\t\n    39\tdef _gen_cmap_registry():\n    40\t    \"\"\"\n    41\t    Generate a dict mapping standard colormap names to standard colormaps, as\n    42\t    well as the reversed colormaps.\n    43\t    \"\"\"\n    44\t    cmap_d = {**cmaps_listed}\n    45\t    for name, spec in datad.items():\n    46\t        cmap_d[name] = (  # Precache the cmaps at a fixed lutsize..\n    47\t            colors.LinearSegmentedColormap(name, spec, _LUTSIZE)\n    48\t            if 'red' in spec else\n    49\t            colors.ListedColormap(spec['listed'], name)\n    50\t            if 'listed' in spec else\n    51\t            colors.LinearSegmentedColormap.from_list(name, spec, _LUTSIZE))\n    52\t    # Generate reversed cmaps.\n    53\t    for cmap in list(cmap_d.values()):\n    54\t        rmap = cmap.reversed()\n    55\t        cmap._global = True\n    56\t        rmap._global = True\n    57\t        cmap_d[rmap.name] = rmap\n    58\t    return cmap_d\n    59\t\n    60\t\n    61\tclass _DeprecatedCmapDictWrapper(MutableMapping):\n    62\t    \"\"\"Dictionary mapping for deprecated _cmap_d access.\"\"\"\n    63\t\n    64\t    def __init__(self, cmap_registry):\n    65\t        self._cmap_registry = cmap_registry\n    66\t\n    67\t    def __delitem__(self, key):\n    68\t        self._warn_deprecated()\n    69\t        self._cmap_registry.__delitem__(key)\n    70\t\n    71\t    def __getitem__(self, key):\n    72\t        self._warn_deprecated()\n    73\t        return self._cmap_registry.__getitem__(key)\n    74\t\n    75\t    def __iter__(self):\n    76\t        self._warn_deprecated()\n    77\t        return self._cmap_registry.__iter__()\n    78\t\n    79\t    def __len__(self):\n    80\t        self._warn_deprecated()\n    81\t        return self._cmap_registry.__len__()\n    82\t\n    83\t    def __setitem__(self, key, val):\n    84\t        self._warn_deprecated()\n    85\t        self._cmap_registry.__setitem__(key, val)\n    86\t\n    87\t    def get(self, key, default=None):\n    88\t        self._warn_deprecated()\n    89\t        return self._cmap_registry.get(key, default)\n    90\t\n    91\t    def _warn_deprecated(self):\n    92\t        _api.warn_deprecated(\n    93\t            \"3.3\",\n    94\t            message=\"The global colormaps dictionary is no longer \"\n    95\t                    \"considered public API.\",\n    96\t            alternative=\"Please use register_cmap() and get_cmap() to \"\n    97\t                        \"access the contents of the dictionary.\"\n    98\t        )\n    99\t\n   100\t\n   101\tclass ColormapRegistry(Mapping):\n   102\t    r\"\"\"\n   103\t    Container for colormaps that are known to Matplotlib by name.\n   104\t\n   105\t    .. admonition:: Experimental\n   106\t\n   107\t       While we expect the API to be final, we formally mark it as\n   108\t       experimental for 3.5 because we want to keep the option to still adapt\n   109\t       the API for 3.6 should the need arise.\n   110\t\n   111\t    The universal registry instance is `matplotlib.colormaps`. There should be\n   112\t    no need for users to instantiate `.ColormapRegistry` themselves.\n   113\t\n   114\t    Read access uses a dict-like interface mapping names to `.Colormap`\\s::\n   115\t\n   116\t        import matplotlib as mpl\n   117\t        cmap = mpl.colormaps['viridis']\n   118\t\n   119\t    Returned `.Colormap`\\s are copies, so that their modification does not\n   120\t    change the global definition of the colormap.\n   121\t\n   122\t    Additional colormaps can be added via `.ColormapRegistry.register`::\n   123\t\n   124\t        mpl.colormaps.register(my_colormap)\n   125\t    \"\"\"\n   126\t    def __init__(self, cmaps):\n   127\t        self._cmaps = cmaps\n   128\t\n   129\t    def __getitem__(self, item):\n   130\t        try:\n   131\t            return self._cmaps[item].copy()\n   132\t        except KeyError:\n   133\t            raise KeyError(f\"{item!r} is not a known colormap name\") from None\n   134\t\n   135\t    def __iter__(self):\n   136\t        return iter(self._cmaps)\n   137\t\n   138\t    def __len__(self):\n   139\t        return len(self._cmaps)\n   140\t\n   141\t    def __str__(self):\n   142\t        return ('ColormapRegistry; available colormaps:\\n' +\n   143\t                ', '.join(f\"'{name}'\" for name in self))\n   144\t\n   145\t    def __call__(self):\n   146\t        \"\"\"\n   147\t        Return a list of the registered colormap names.\n   148\t\n   149\t        This exists only for backward-compatibilty in `.pyplot` which had a\n   150\t        ``plt.colormaps()`` method. The recommended way to get this list is\n   151\t        now ``list(colormaps)``.\n   152\t        \"\"\"\n   153\t        return list(self)\n   154\t\n   155\t    def register(self, cmap, *, name=None, force=False):\n   156\t        \"\"\"\n   157\t        Register a new colormap.\n   158\t\n   159\t        The colormap name can then be used as a string argument to any ``cmap``\n   160\t        parameter in Matplotlib. It is also available in ``pyplot.get_cmap``.\n   161\t\n   162\t        The colormap registry stores a copy of the given colormap, so that\n   163\t        future changes to the original colormap instance do not affect the\n   164\t        registered colormap. Think of this as the registry taking a snapshot\n   165\t        of the colormap at registration.\n   166\t\n   167\t        Parameters\n   168\t        ----------\n   169\t        cmap : matplotlib.colors.Colormap\n   170\t            The colormap to register.\n   171\t\n   172\t        name : str, optional\n   173\t            The name for the colormap. If not given, ``cmap.name`` is used.\n   174\t\n   175\t        force : bool, default: False\n   176\t            If False, a ValueError is raised if trying to overwrite an already\n   177\t            registered name. True supports overwriting registered colormaps\n   178\t            other than the builtin colormaps.\n   179\t        \"\"\"\n   180\t        name = name or cmap.name\n   181\t        if name in self and not force:\n   182\t            raise ValueError(\n   183\t                f'A colormap named \"{name}\" is already registered.')\n   184\t        register_cmap(name, cmap.copy())\n   185\t\n   186\t\n   187\t_cmap_registry = _gen_cmap_registry()\n   188\tglobals().update(_cmap_registry)\n   189\t# This is no longer considered public API\n   190\tcmap_d = _DeprecatedCmapDictWrapper(_cmap_registry)\n   191\t__builtin_cmaps = tuple(_cmap_registry)\n   192\t\n   193\t# public access to the colormaps should be via `matplotlib.colormaps`. For now,\n   194\t# we still create the registry here, but that should stay an implementation\n   195\t# detail.\n   196\t_colormaps = ColormapRegistry(_cmap_registry)\n   197\t\n   198\t\n   199\tdef register_cmap(name=None, cmap=None, *, override_builtin=False):\n   200\t    \"\"\"\n\n[TRONQUÉ -- fichier de 619 lignes au total, seules les 200 premières sont affichées. Précise start/end pour lire une autre plage.]"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "role": "model",
+    "parts": [
+      {
+        "function_call": {
+          "name": "search_code",
+          "args": {
+            "pattern": "class ScalarMappable",
+            "path": "lib/matplotlib/cm.py"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "role": "user",
+    "parts": [
+      {
+        "function_response": {
+          "name": "search_code",
+          "response": {
+            "result": "334:class ScalarMappable:\n"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "role": "model",
+    "parts": [
+      {
+        "function_call": {
+          "name": "search_code",
+          "args": {
+            "start": 334,
+            "pattern": "def format_cursor_data",
+            "path": "lib/matplotlib/cm.py"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "role": "user",
+    "parts": [
+      {
+        "function_response": {
+          "name": "search_code",
+          "response": {
+            "result": "ERREUR outil: search_code() got an unexpected keyword argument 'start'"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "role": "model",
+    "parts": [
+      {
+        "function_call": {
+          "name": "read_file",
+          "args": {
+            "path": "lib/matplotlib/cm.py"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "role": "user",
+    "parts": [
+      {
+        "function_response": {
+          "name": "read_file",
+          "response": {
+            "result": "     1\t\"\"\"\n     2\tBuiltin colormaps, colormap handling utilities, and the `ScalarMappable` mixin.\n     3\t\n     4\t.. seealso::\n     5\t\n     6\t  :doc:`/gallery/color/colormap_reference` for a list of builtin colormaps.\n     7\t\n     8\t  :doc:`/tutorials/colors/colormap-manipulation` for examples of how to\n     9\t  make colormaps.\n    10\t\n    11\t  :doc:`/tutorials/colors/colormaps` an in-depth discussion of\n    12\t  choosing colormaps.\n    13\t\n    14\t  :doc:`/tutorials/colors/colormapnorms` for more details about data\n    15\t  normalization.\n    16\t\"\"\"\n    17\t\n    18\tfrom collections.abc import Mapping, MutableMapping\n    19\t\n    20\timport numpy as np\n    21\tfrom numpy import ma\n    22\t\n    23\timport matplotlib as mpl\n    24\tfrom matplotlib import _api, colors, cbook\n    25\tfrom matplotlib._cm import datad\n    26\tfrom matplotlib._cm_listed import cmaps as cmaps_listed\n    27\t\n    28\t\n    29\t@_api.caching_module_getattr  # module-level deprecations\n    30\tclass __getattr__:\n    31\t    LUTSIZE = _api.deprecated(\n    32\t        \"3.5\", obj_type=\"\", alternative=\"rcParams['image.lut']\")(\n    33\t            property(lambda self: _LUTSIZE))\n    34\t\n    35\t\n    36\t_LUTSIZE = mpl.rcParams['image.lut']\n    37\t\n    38\t\n    39\tdef _gen_cmap_registry():\n    40\t    \"\"\"\n    41\t    Generate a dict mapping standard colormap names to standard colormaps, as\n    42\t    well as the reversed colormaps.\n    43\t    \"\"\"\n    44\t    cmap_d = {**cmaps_listed}\n    45\t    for name, spec in datad.items():\n    46\t        cmap_d[name] = (  # Precache the cmaps at a fixed lutsize..\n    47\t            colors.LinearSegmentedColormap(name, spec, _LUTSIZE)\n    48\t            if 'red' in spec else\n    49\t            colors.ListedColormap(spec['listed'], name)\n    50\t            if 'listed' in spec else\n    51\t            colors.LinearSegmentedColormap.from_list(name, spec, _LUTSIZE))\n    52\t    # Generate reversed cmaps.\n    53\t    for cmap in list(cmap_d.values()):\n    54\t        rmap = cmap.reversed()\n    55\t        cmap._global = True\n    56\t        rmap._global = True\n    57\t        cmap_d[rmap.name] = rmap\n    58\t    return cmap_d\n    59\t\n    60\t\n    61\tclass _DeprecatedCmapDictWrapper(MutableMapping):\n    62\t    \"\"\"Dictionary mapping for deprecated _cmap_d access.\"\"\"\n    63\t\n    64\t    def __init__(self, cmap_registry):\n    65\t        self._cmap_registry = cmap_registry\n    66\t\n    67\t    def __delitem__(self, key):\n    68\t        self._warn_deprecated()\n    69\t        self._cmap_registry.__delitem__(key)\n    70\t\n    71\t    def __getitem__(self, key):\n    72\t        self._warn_deprecated()\n    73\t        return self._cmap_registry.__getitem__(key)\n    74\t\n    75\t    def __iter__(self):\n    76\t        self._warn_deprecated()\n    77\t        return self._cmap_registry.__iter__()\n    78\t\n    79\t    def __len__(self):\n    80\t        self._warn_deprecated()\n    81\t        return self._cmap_registry.__len__()\n    82\t\n    83\t    def __setitem__(self, key, val):\n    84\t        self._warn_deprecated()\n    85\t        self._cmap_registry.__setitem__(key, val)\n    86\t\n    87\t    def get(self, key, default=None):\n    88\t        self._warn_deprecated()\n    89\t        return self._cmap_registry.get(key, default)\n    90\t\n    91\t    def _warn_deprecated(self):\n    92\t        _api.warn_deprecated(\n    93\t            \"3.3\",\n    94\t            message=\"The global colormaps dictionary is no longer \"\n    95\t                    \"considered public API.\",\n    96\t            alternative=\"Please use register_cmap() and get_cmap() to \"\n    97\t                        \"access the contents of the dictionary.\"\n    98\t        )\n    99\t\n   100\t\n   101\tclass ColormapRegistry(Mapping):\n   102\t    r\"\"\"\n   103\t    Container for colormaps that are known to Matplotlib by name.\n   104\t\n   105\t    .. admonition:: Experimental\n   106\t\n   107\t       While we expect the API to be final, we formally mark it as\n   108\t       experimental for 3.5 because we want to keep the option to still adapt\n   109\t       the API for 3.6 should the need arise.\n   110\t\n   111\t    The universal registry instance is `matplotlib.colormaps`. There should be\n   112\t    no need for users to instantiate `.ColormapRegistry` themselves.\n   113\t\n   114\t    Read access uses a dict-like interface mapping names to `.Colormap`\\s::\n   115\t\n   116\t        import matplotlib as mpl\n   117\t        cmap = mpl.colormaps['viridis']\n   118\t\n   119\t    Returned `.Colormap`\\s are copies, so that their modification does not\n   120\t    change the global definition of the colormap.\n   121\t\n   122\t    Additional colormaps can be added via `.ColormapRegistry.register`::\n   123\t\n   124\t        mpl.colormaps.register(my_colormap)\n   125\t    \"\"\"\n   126\t    def __init__(self, cmaps):\n   127\t        self._cmaps = cmaps\n   128\t\n   129\t    def __getitem__(self, item):\n   130\t        try:\n   131\t            return self._cmaps[item].copy()\n   132\t        except KeyError:\n   133\t            raise KeyError(f\"{item!r} is not a known colormap name\") from None\n   134\t\n   135\t    def __iter__(self):\n   136\t        return iter(self._cmaps)\n   137\t\n   138\t    def __len__(self):\n   139\t        return len(self._cmaps)\n   140\t\n   141\t    def __str__(self):\n   142\t        return ('ColormapRegistry; available colormaps:\\n' +\n   143\t                ', '.join(f\"'{name}'\" for name in self))\n   144\t\n   145\t    def __call__(self):\n   146\t        \"\"\"\n   147\t        Return a list of the registered colormap names.\n   148\t\n   149\t        This exists only for backward-compatibilty in `.pyplot` which had a\n   150\t        ``plt.colormaps()`` method. The recommended way to get this list is\n   151\t        now ``list(colormaps)``.\n   152\t        \"\"\"\n   153\t        return list(self)\n   154\t\n   155\t    def register(self, cmap, *, name=None, force=False):\n   156\t        \"\"\"\n   157\t        Register a new colormap.\n   158\t\n   159\t        The colormap name can then be used as a string argument to any ``cmap``\n   160\t        parameter in Matplotlib. It is also available in ``pyplot.get_cmap``.\n   161\t\n   162\t        The colormap registry stores a copy of the given colormap, so that\n   163\t        future changes to the original colormap instance do not affect the\n   164\t        registered colormap. Think of this as the registry taking a snapshot\n   165\t        of the colormap at registration.\n   166\t\n   167\t        Parameters\n   168\t        ----------\n   169\t        cmap : matplotlib.colors.Colormap\n   170\t            The colormap to register.\n   171\t\n   172\t        name : str, optional\n   173\t            The name for the colormap. If not given, ``cmap.name`` is used.\n   174\t\n   175\t        force : bool, default: False\n   176\t            If False, a ValueError is raised if trying to overwrite an already\n   177\t            registered name. True supports overwriting registered colormaps\n   178\t            other than the builtin colormaps.\n   179\t        \"\"\"\n   180\t        name = name or cmap.name\n   181\t        if name in self and not force:\n   182\t            raise ValueError(\n   183\t                f'A colormap named \"{name}\" is already registered.')\n   184\t        register_cmap(name, cmap.copy())\n   185\t\n   186\t\n   187\t_cmap_registry = _gen_cmap_registry()\n   188\tglobals().update(_cmap_registry)\n   189\t# This is no longer considered public API\n   190\tcmap_d = _DeprecatedCmapDictWrapper(_cmap_registry)\n   191\t__builtin_cmaps = tuple(_cmap_registry)\n   192\t\n   193\t# public access to the colormaps should be via `matplotlib.colormaps`. For now,\n   194\t# we still create the registry here, but that should stay an implementation\n   195\t# detail.\n   196\t_colormaps = ColormapRegistry(_cmap_registry)\n   197\t\n   198\t\n   199\tdef register_cmap(name=None, cmap=None, *, override_builtin=False):\n   200\t    \"\"\"\n\n[TRONQUÉ -- fichier de 619 lignes au total, seules les 200 premières sont affichées. Précise start/end pour lire une autre plage.]"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "role": "model",
+    "parts": [
+      {
+        "function_call": {
+          "name": "read_file",
+          "args": {
+            "start": 1277,
+            "path": "lib/matplotlib/artist.py"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "role": "user",
+    "parts": [
+      {
+        "function_response": {
+          "name": "read_file",
+          "response": {
+            "result": "     1\tfrom collections import namedtuple\n     2\timport contextlib\n     3\tfrom functools import wraps\n     4\timport inspect\n     5\tfrom inspect import Signature, Parameter\n     6\timport logging\n     7\tfrom numbers import Number\n     8\timport re\n     9\timport warnings\n    10\t\n    11\timport numpy as np\n    12\t\n    13\timport matplotlib as mpl\n    14\tfrom . import _api, cbook\n    15\tfrom .cm import ScalarMappable\n    16\tfrom .path import Path\n    17\tfrom .transforms import (Bbox, IdentityTransform, Transform, TransformedBbox,\n    18\t                         TransformedPatchPath, TransformedPath)\n    19\t\n    20\t_log = logging.getLogger(__name__)\n    21\t\n    22\t\n    23\tdef allow_rasterization(draw):\n    24\t    \"\"\"\n    25\t    Decorator for Artist.draw method. Provides routines\n    26\t    that run before and after the draw call. The before and after functions\n    27\t    are useful for changing artist-dependent renderer attributes or making\n    28\t    other setup function calls, such as starting and flushing a mixed-mode\n    29\t    renderer.\n    30\t    \"\"\"\n    31\t\n    32\t    @wraps(draw)\n    33\t    def draw_wrapper(artist, renderer):\n    34\t        try:\n    35\t            if artist.get_rasterized():\n    36\t                if renderer._raster_depth == 0 and not renderer._rasterizing:\n    37\t                    renderer.start_rasterizing()\n    38\t                    renderer._rasterizing = True\n    39\t                renderer._raster_depth += 1\n    40\t            else:\n    41\t                if renderer._raster_depth == 0 and renderer._rasterizing:\n    42\t                    # Only stop when we are not in a rasterized parent\n    43\t                    # and something has be rasterized since last stop\n    44\t                    renderer.stop_rasterizing()\n    45\t                    renderer._rasterizing = False\n    46\t\n    47\t            if artist.get_agg_filter() is not None:\n    48\t                renderer.start_filter()\n    49\t\n    50\t            return draw(artist, renderer)\n    51\t        finally:\n    52\t            if artist.get_agg_filter() is not None:\n    53\t                renderer.stop_filter(artist.get_agg_filter())\n    54\t            if artist.get_rasterized():\n    55\t                renderer._raster_depth -= 1\n    56\t            if (renderer._rasterizing and artist.figure and\n    57\t                    artist.figure.suppressComposite):\n    58\t                # restart rasterizing to prevent merging\n    59\t                renderer.stop_rasterizing()\n    60\t                renderer.start_rasterizing()\n    61\t\n    62\t    draw_wrapper._supports_rasterization = True\n    63\t    return draw_wrapper\n    64\t\n    65\t\n    66\tdef _finalize_rasterization(draw):\n    67\t    \"\"\"\n    68\t    Decorator for Artist.draw method. Needed on the outermost artist, i.e.\n    69\t    Figure, to finish up if the render is still in rasterized mode.\n    70\t    \"\"\"\n    71\t    @wraps(draw)\n    72\t    def draw_wrapper(artist, renderer, *args, **kwargs):\n    73\t        result = draw(artist, renderer, *args, **kwargs)\n    74\t        if renderer._rasterizing:\n    75\t            renderer.stop_rasterizing()\n    76\t            renderer._rasterizing = False\n    77\t        return result\n    78\t    return draw_wrapper\n    79\t\n    80\t\n    81\tdef _stale_axes_callback(self, val):\n    82\t    if self.axes:\n    83\t        self.axes.stale = val\n    84\t\n    85\t\n    86\t_XYPair = namedtuple(\"_XYPair\", \"x y\")\n    87\t\n    88\t\n    89\tclass _Unset:\n    90\t    def __repr__(self):\n    91\t        return \"<UNSET>\"\n    92\t_UNSET = _Unset()\n    93\t\n    94\t\n    95\tclass Artist:\n    96\t    \"\"\"\n    97\t    Abstract base class for objects that render into a FigureCanvas.\n    98\t\n    99\t    Typically, all visible elements in a figure are subclasses of Artist.\n   100\t    \"\"\"\n   101\t\n   102\t    zorder = 0\n   103\t\n   104\t    def __init_subclass__(cls):\n   105\t        # Inject custom set() methods into the subclass with signature and\n   106\t        # docstring based on the subclasses' properties.\n   107\t\n   108\t        if not hasattr(cls.set, '_autogenerated_signature'):\n   109\t            # Don't overwrite cls.set if the subclass or one of its parents\n   110\t            # has defined a set method set itself.\n   111\t            # If there was no explicit definition, cls.set is inherited from\n   112\t            # the hierarchy of auto-generated set methods, which hold the\n   113\t            # flag _autogenerated_signature.\n   114\t            return\n   115\t\n   116\t        cls.set = lambda self, **kwargs: Artist.set(self, **kwargs)\n   117\t        cls.set.__name__ = \"set\"\n   118\t        cls.set.__qualname__ = f\"{cls.__qualname__}.set\"\n   119\t        cls._update_set_signature_and_docstring()\n   120\t\n   121\t    _PROPERTIES_EXCLUDED_FROM_SET = [\n   122\t        'navigate_mode',  # not a user-facing function\n   123\t        'figure',         # changing the figure is such a profound operation\n   124\t                          # that we don't want this in set()\n   125\t        '3d_properties',  # cannot be used as a keyword due to leading digit\n   126\t    ]\n   127\t\n   128\t    @classmethod\n   129\t    def _update_set_signature_and_docstring(cls):\n   130\t        \"\"\"\n   131\t        Update the signature of the set function to list all properties\n   132\t        as keyword arguments.\n   133\t\n   134\t        Property aliases are not listed in the signature for brevity, but\n   135\t        are still accepted as keyword arguments.\n   136\t        \"\"\"\n   137\t        cls.set.__signature__ = Signature(\n   138\t            [Parameter(\"self\", Parameter.POSITIONAL_OR_KEYWORD),\n   139\t             *[Parameter(prop, Parameter.KEYWORD_ONLY, default=_UNSET)\n   140\t               for prop in ArtistInspector(cls).get_setters()\n   141\t               if prop not in Artist._PROPERTIES_EXCLUDED_FROM_SET]])\n   142\t        cls.set._autogenerated_signature = True\n   143\t\n   144\t        cls.set.__doc__ = (\n   145\t            \"Set multiple properties at once.\\n\\n\"\n   146\t            \"Supported properties are\\n\\n\"\n   147\t            + kwdoc(cls))\n   148\t\n   149\t    def __init__(self):\n   150\t        self._stale = True\n   151\t        self.stale_callback = None\n   152\t        self._axes = None\n   153\t        self.figure = None\n   154\t\n   155\t        self._transform = None\n   156\t        self._transformSet = False\n   157\t        self._visible = True\n   158\t        self._animated = False\n   159\t        self._alpha = None\n   160\t        self.clipbox = None\n   161\t        self._clippath = None\n   162\t        self._clipon = True\n   163\t        self._label = ''\n   164\t        self._picker = None\n   165\t        self._rasterized = False\n   166\t        self._agg_filter = None\n   167\t        # Normally, artist classes need to be queried for mouseover info if and\n   168\t        # only if they override get_cursor_data.\n   169\t        self._mouseover = type(self).get_cursor_data != Artist.get_cursor_data\n   170\t        self._callbacks = cbook.CallbackRegistry(signals=[\"pchanged\"])\n   171\t        try:\n   172\t            self.axes = None\n   173\t        except AttributeError:\n   174\t            # Handle self.axes as a read-only property, as in Figure.\n   175\t            pass\n   176\t        self._remove_method = None\n   177\t        self._url = None\n   178\t        self._gid = None\n   179\t        self._snap = None\n   180\t        self._sketch = mpl.rcParams['path.sketch']\n   181\t        self._path_effects = mpl.rcParams['path.effects']\n   182\t        self._sticky_edges = _XYPair([], [])\n   183\t        self._in_layout = True\n   184\t\n   185\t    def __getstate__(self):\n   186\t        d = self.__dict__.copy()\n   187\t        # remove the unpicklable remove method, this will get re-added on load\n   188\t        # (by the Axes) if the artist lives on an Axes.\n   189\t        d['stale_callback'] = None\n   190\t        return d\n   191\t\n   192\t    def remove(self):\n   193\t        \"\"\"\n   194\t        Remove the artist from the figure if possible.\n   195\t\n   196\t        The effect will not be visible until the figure is redrawn, e.g.,\n   197\t        with `.FigureCanvasBase.draw_idle`.  Call `~.axes.Axes.relim` to\n   198\t        update the axes limits if desired.\n   199\t\n   200\t        Note: `~.axes.Axes.relim` will not see collections even if the\n\n[TRONQUÉ -- fichier de 1800 lignes au total, seules les 200 premières sont affichées. Précise start/end pour lire une autre plage.]"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "role": "model",
+    "parts": [
+      {
+        "function_call": {
+          "name": "read_file",
+          "args": {
+            "start": 1270,
+            "path": "lib/matplotlib/artist.py",
+            "end": 1300
+          }
+        }
+      }
+    ]
+  },
+  {
+    "role": "user",
+    "parts": [
+      {
+        "function_response": {
+          "name": "read_file",
+          "response": {
+            "result": "  1270\t        See Also\n  1271\t        --------\n  1272\t        format_cursor_data\n  1273\t\n  1274\t        \"\"\"\n  1275\t        return None\n  1276\t\n  1277\t    def format_cursor_data(self, data):\n  1278\t        \"\"\"\n  1279\t        Return a string representation of *data*.\n  1280\t\n  1281\t        .. note::\n  1282\t            This method is intended to be overridden by artist subclasses.\n  1283\t            As an end-user of Matplotlib you will most likely not call this\n  1284\t            method yourself.\n  1285\t\n  1286\t        The default implementation converts ints and floats and arrays of ints\n  1287\t        and floats into a comma-separated string enclosed in square brackets,\n  1288\t        unless the artist has an associated colorbar, in which case scalar\n  1289\t        values are formatted using the colorbar's formatter.\n  1290\t\n  1291\t        See Also\n  1292\t        --------\n  1293\t        get_cursor_data\n  1294\t        \"\"\"\n  1295\t        if np.ndim(data) == 0 and isinstance(self, ScalarMappable):\n  1296\t            # This block logically belongs to ScalarMappable, but can't be\n  1297\t            # implemented in it because most ScalarMappable subclasses inherit\n  1298\t            # from Artist first and from ScalarMappable second, so\n  1299\t            # Artist.format_cursor_data would always have precedence over\n  1300\t            # ScalarMappable.format_cursor_data.\n"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "role": "model",
+    "parts": [
+      {
+        "function_call": {
+          "name": "search_code",
+          "args": {
+            "pattern": "self.norm.inverse",
+            "path": "lib/matplotlib/artist.py"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "role": "user",
+    "parts": [
+      {
+        "text": "Point de contrôle budget : il te reste 4 tour(s) sur 15. Si tu n'as pas encore de correctif appliqué, ou si tu répètes la même approche sans progrès depuis plusieurs tours, envisage une stratégie différente plutôt que d'épuiser le budget sans résultat."
+      }
+    ]
+  },
+  {
+    "role": "model",
+    "parts": [
+      {
+        "function_call": {
+          "name": "search_code",
+          "args": {
+            "path": "lib/matplotlib/cm.py",
+            "pattern": "self.norm.inverse"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "role": "user",
+    "parts": [
+      {
+        "function_response": {
+          "name": "search_code",
+          "response": {
+            "result": "(aucun résultat)"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "role": "model",
+    "parts": [
+      {
+        "function_call": {
+          "name": "read_file",
+          "args": {
+            "path": "lib/matplotlib/cm.py",
+            "end": 400,
+            "start": 334
+          }
+        }
+      }
+    ]
+  },
+  {
+    "role": "user",
+    "parts": [
+      {
+        "function_response": {
+          "name": "read_file",
+          "response": {
+            "result": "   334\tclass ScalarMappable:\n   335\t    \"\"\"\n   336\t    A mixin class to map scalar data to RGBA.\n   337\t\n   338\t    The ScalarMappable applies data normalization before returning RGBA colors\n   339\t    from the given colormap.\n   340\t    \"\"\"\n   341\t\n   342\t    def __init__(self, norm=None, cmap=None):\n   343\t        \"\"\"\n   344\t\n   345\t        Parameters\n   346\t        ----------\n   347\t        norm : `matplotlib.colors.Normalize` (or subclass thereof)\n   348\t            The normalizing object which scales data, typically into the\n   349\t            interval ``[0, 1]``.\n   350\t            If *None*, *norm* defaults to a *colors.Normalize* object which\n   351\t            initializes its scaling based on the first data processed.\n   352\t        cmap : str or `~matplotlib.colors.Colormap`\n   353\t            The colormap used to map normalized data values to RGBA colors.\n   354\t        \"\"\"\n   355\t        self._A = None\n   356\t        self._norm = None  # So that the setter knows we're initializing.\n   357\t        self.set_norm(norm)  # The Normalize instance of this ScalarMappable.\n   358\t        self.cmap = None  # So that the setter knows we're initializing.\n   359\t        self.set_cmap(cmap)  # The Colormap instance of this ScalarMappable.\n   360\t        #: The last colorbar associated with this ScalarMappable. May be None.\n   361\t        self.colorbar = None\n   362\t        self.callbacks = cbook.CallbackRegistry(signals=[\"changed\"])\n   363\t\n   364\t    callbacksSM = _api.deprecated(\"3.5\", alternative=\"callbacks\")(\n   365\t        property(lambda self: self.callbacks))\n   366\t\n   367\t    def _scale_norm(self, norm, vmin, vmax):\n   368\t        \"\"\"\n   369\t        Helper for initial scaling.\n   370\t\n   371\t        Used by public functions that create a ScalarMappable and support\n   372\t        parameters *vmin*, *vmax* and *norm*. This makes sure that a *norm*\n   373\t        will take precedence over *vmin*, *vmax*.\n   374\t\n   375\t        Note that this method does not set the norm.\n   376\t        \"\"\"\n   377\t        if vmin is not None or vmax is not None:\n   378\t            self.set_clim(vmin, vmax)\n   379\t            if norm is not None:\n   380\t                raise ValueError(\n   381\t                    \"Passing parameters norm and vmin/vmax simultaneously is \"\n   382\t                    \"not supported. Please pass vmin/vmax directly to the \"\n   383\t                    \"norm when creating it.\")\n   384\t\n   385\t        # always resolve the autoscaling so we have concrete limits\n   386\t        # rather than deferring to draw time.\n   387\t        self.autoscale_None()\n   388\t\n   389\t    def to_rgba(self, x, alpha=None, bytes=False, norm=True):\n   390\t        \"\"\"\n   391\t        Return a normalized rgba array corresponding to *x*.\n   392\t\n   393\t        In the normal case, *x* is a 1D or 2D sequence of scalars, and\n   394\t        the corresponding ndarray of rgba values will be returned,\n   395\t        based on the norm and colormap set for this ScalarMappable.\n   396\t\n   397\t        There is one special case, for handling images that are already\n   398\t        rgb or rgba, such as might have been read from an image file.\n   399\t        If *x* is an ndarray with 3 dimensions,\n   400\t        and the last dimension is either 3 or 4, then it will be\n"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "role": "model",
+    "parts": [
+      {
+        "function_call": {
+          "name": "read_file",
+          "args": {
+            "end": 1300,
+            "path": "lib/matplotlib/artist.py",
+            "start": 1295
+          }
+        }
+      }
+    ]
+  },
+  {
+    "role": "user",
+    "parts": [
+      {
+        "function_response": {
+          "name": "read_file",
+          "response": {
+            "result": "  1295\t        if np.ndim(data) == 0 and isinstance(self, ScalarMappable):\n  1296\t            # This block logically belongs to ScalarMappable, but can't be\n  1297\t            # implemented in it because most ScalarMappable subclasses inherit\n  1298\t            # from Artist first and from ScalarMappable second, so\n  1299\t            # Artist.format_cursor_data would always have precedence over\n  1300\t            # ScalarMappable.format_cursor_data.\n"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "role": "model",
+    "parts": [
+      {
+        "function_call": {
+          "name": "search_code",
+          "args": {
+            "pattern": "self.norm",
+            "path": "lib/matplotlib/artist.py",
+            "start": 1277,
+            "end": 1300
+          }
+        }
+      }
+    ]
+  }
+]
